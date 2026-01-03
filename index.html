@@ -90,9 +90,18 @@ function displayData(data) {
 }
 
 // 3. ฟังก์ชันค้นหา
+// แก้ไขฟังก์ชัน search ใหม่ให้ฉลาดขึ้น
 function search() {
     const query = document.getElementById('search').value.toLowerCase();
     
+    // --- เพิ่มส่วนนี้เข้าไปครับ ---
+    // ถ้าช่องค้นหาว่างเปล่า ให้ล้างหน้าจอแล้วหยุดทำงานทันที
+    if (query === "") {
+        resultsDiv.innerHTML = ''; 
+        return;
+    }
+    // --------------------------
+
     const filteredData = dictionaryData.filter(item => {
         return item.term.toLowerCase().includes(query) || 
                item.translation.toLowerCase().includes(query) || 
@@ -106,5 +115,6 @@ function search() {
 
 </body>
 </html>
+
 
 
