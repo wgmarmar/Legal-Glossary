@@ -30,7 +30,7 @@
     <h1>🏛️ พจนานุกรมกฎหมาย</h1>
     
     <div class="search-box">
-        <input type="text" id="search" placeholder="พิมพ์คำศัพท์ หรือคำแปล..." onkeyup="search()">
+        <input type="text" id="search" placeholder="พิมพ์คำศัพท์ หรือคำแปล..." onkeyup="search()" autocomplete="off">
     </div>
     
     <div id="results">
@@ -90,31 +90,33 @@ function displayData(data) {
 }
 
 // 3. ฟังก์ชันค้นหา
-// แก้ไขฟังก์ชัน search ใหม่ให้ฉลาดขึ้น
 function search() {
-    const query = document.getElementById('search').value.toLowerCase();
+    // .trim() จะช่วยตัดช่องว่างหัวท้ายออก ถ้าเหลือแต่ความว่างเปล่าจริงๆ จะได้ล้างหน้าจอได้แม่นยำ
+    const query = document.getElementById('search').value.toLowerCase().trim();
     
-    // --- เพิ่มส่วนนี้เข้าไปครับ ---
-    // ถ้าช่องค้นหาว่างเปล่า ให้ล้างหน้าจอแล้วหยุดทำงานทันที
+    const resultsDiv = document.getElementById('results');
+
+    // ถ้าช่องค้นหาว่างเปล่า ให้ล้างข้อมูลทิ้งทันที และไม่ต้องทำอะไรต่อ
     if (query === "") {
         resultsDiv.innerHTML = ''; 
         return;
     }
-    // --------------------------
 
+    // กรองข้อมูล
     const filteredData = dictionaryData.filter(item => {
         return item.term.toLowerCase().includes(query) || 
                item.translation.toLowerCase().includes(query) || 
                item.keywords.toLowerCase().includes(query);
     });
     
+    // แสดงผลข้อมูลที่กรองแล้ว
     displayData(filteredData);
 }
-
 </script>
 
 </body>
 </html>
+
 
 
 
