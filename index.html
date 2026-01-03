@@ -4,32 +4,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Legal Dictionary - พจนานุกรมกฎหมาย</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Sarabun', sans-serif; padding: 20px; background-color: #f4f7f6; }
+        body { font-family: 'Sarabun', sans-serif; padding: 20px; background-color: #f0f2f5; color: #333; }
         .container { max-width: 600px; margin: auto; }
-        h1 { color: #2c3e50; text-align: center; }
-        #search { width: 100%; padding: 15px; border: 2px solid #3498db; border-radius: 25px; font-size: 18px; outline: none; box-sizing: border-box; }
+        h1 { color: #2c3e50; text-align: center; margin-bottom: 30px; }
+        
+        /* สไตล์ช่องค้นหา */
+        .search-box { position: sticky; top: 10px; background: #f0f2f5; padding: 10px 0; z-index: 100; }
+        #search { width: 100%; padding: 15px 20px; border: 2px solid #3498db; border-radius: 30px; font-size: 18px; outline: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        
+        /* สไตล์การ์ดคำศัพท์ */
         #results { margin-top: 20px; }
-        .card { background: white; padding: 15px; border-radius: 10px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: none; }
-        .card.active { display: block; }
-        .term { color: #e74c3c; font-size: 20px; font-weight: bold; }
-        .trans { color: #2980b9; font-weight: bold; }
-        .def { color: #555; font-size: 14px; margin-top: 5px; }
+        .card { background: white; padding: 20px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); transition: transform 0.2s; border-left: 5px solid #3498db; }
+        .card:hover { transform: translateY(-3px); }
+        .term { color: #e74c3c; font-size: 22px; font-weight: bold; margin-bottom: 5px; }
+        .trans { color: #2980b9; font-size: 18px; font-weight: bold; margin-bottom: 10px; }
+        .def { color: #555; font-size: 15px; line-height: 1.6; border-top: 1px solid #eee; pt: 10px; margin-top: 10px; }
+        .no-result { text-align: center; color: #888; margin-top: 50px; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h1>🏛️ พจนานุกรมกฎหมาย</h1>
-    <input type="text" id="search" placeholder="พิมพ์คำศัพท์เพื่อค้นหา..." onkeyup="search()">
+    
+    <div class="search-box">
+        <input type="text" id="search" placeholder="พิมพ์คำศัพท์ หรือคำแปล..." onkeyup="search()">
+    </div>
     
     <div id="results">
         </div>
 </div>
 
 <script>
-// 1. ใส่ข้อมูลคำศัพท์ของคุณตรงนี้
-const dictionaryData = [
+// 1. ข้อมูลคำศัพท์จากไฟล์ CSV ของคุณ
 const dictionaryData = [
     {
         term: "Ab absurdo",
@@ -56,14 +65,21 @@ const dictionaryData = [
         keywords: "certiorrary"
     }
 ];
+
 const resultsDiv = document.getElementById('results');
 
-// 2. ฟังก์ชันสร้างการ์ดแสดงผล
-function buildCards() {
-    dictionaryData.forEach((item, index) => {
+// 2. ฟังก์ชันแสดงผลข้อมูล (สร้างการ์ด)
+function displayData(data) {
+    resultsDiv.innerHTML = ''; // ล้างค่าเก่า
+    
+    if (data.length === 0) {
+        resultsDiv.innerHTML = '<div class="no-result">ไม่พบคำศัพท์ที่ค้นหา...</div>';
+        return;
+    }
+
+    data.forEach(item => {
         const div = document.createElement('div');
         div.className = 'card';
-        div.id = 'card-' + index;
         div.innerHTML = `
             <div class="term">${item.term}</div>
             <div class="trans">${item.translation}</div>
@@ -73,24 +89,21 @@ function buildCards() {
     });
 }
 
-// 3. ฟังก์ชันค้นหาขณะพิมพ์ (Search-as-you-type)
+// 3. ฟังก์ชันค้นหา
 function search() {
-    let input = document.getElementById('search').value.toLowerCase();
+    const query = document.getElementById('search').value.toLowerCase();
     
-    dictionaryData.forEach((item, index) => {
-        let card = document.getElementById('card-' + index);
-        let content = (item.term + item.translation + item.keywords).toLowerCase();
-        
-        if (input !== "" && content.includes(input)) {
-            card.classList.add('active');
-        } else {
-            card.classList.remove('active');
-        }
+    const filteredData = dictionaryData.filter(item => {
+        return item.term.toLowerCase().includes(query) || 
+               item.translation.toLowerCase().includes(query) || 
+               item.keywords.toLowerCase().includes(query);
     });
+    
+    displayData(filteredData);
 }
 
-// เริ่มต้นสร้างข้อมูล
-buildCards();
+// 4. สั่งให้แสดงข้อมูลทั้งหมดทันทีที่เปิดเว็บ
+displayData(dictionaryData);
 </script>
 
 </body>
