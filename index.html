@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legal Dictionary - พจนานุกรมกฎหมาย</title>
+    <style>
+        body { font-family: 'Sarabun', sans-serif; padding: 20px; background-color: #f4f7f6; }
+        .container { max-width: 600px; margin: auto; }
+        h1 { color: #2c3e50; text-align: center; }
+        #search { width: 100%; padding: 15px; border: 2px solid #3498db; border-radius: 25px; font-size: 18px; outline: none; box-sizing: border-box; }
+        #results { margin-top: 20px; }
+        .card { background: white; padding: 15px; border-radius: 10px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: none; }
+        .card.active { display: block; }
+        .term { color: #e74c3c; font-size: 20px; font-weight: bold; }
+        .trans { color: #2980b9; font-weight: bold; }
+        .def { color: #555; font-size: 14px; margin-top: 5px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🏛️ พจนานุกรมกฎหมาย</h1>
+    <input type="text" id="search" placeholder="พิมพ์คำศัพท์เพื่อค้นหา..." onkeyup="search()">
+    
+    <div id="results">
+        </div>
+</div>
+
+<script>
+// 1. ใส่ข้อมูลคำศัพท์ของคุณตรงนี้
+const dictionaryData = [
+const dictionaryData = [
+    {
+        term: "Ab absurdo",
+        translation: "ไม่มีมูล",
+        definition: "จากความไร้สาระ หรือจากสิ่งที่เป็นไปไม่ได้",
+        keywords: "absrudo"
+    },
+    {
+        term: "Ab initio",
+        translation: "ตั้งแต่ต้น",
+        definition: "ตั้งแต่เริ่มต้น",
+        keywords: "ab intio"
+    },
+    {
+        term: "A priori",
+        translation: "เรื่องก่อหน้า",
+        definition: "ความก่อนหน้า",
+        keywords: "A pirori"
+    },
+    {
+        term: "certiorary",
+        translation: "คำสั่งศาลฏีกา",
+        definition: "คำสั่งของศาลฎีกา",
+        keywords: "certiorrary"
+    }
+];
+const resultsDiv = document.getElementById('results');
+
+// 2. ฟังก์ชันสร้างการ์ดแสดงผล
+function buildCards() {
+    dictionaryData.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = 'card';
+        div.id = 'card-' + index;
+        div.innerHTML = `
+            <div class="term">${item.term}</div>
+            <div class="trans">${item.translation}</div>
+            <div class="def">${item.definition}</div>
+        `;
+        resultsDiv.appendChild(div);
+    });
+}
+
+// 3. ฟังก์ชันค้นหาขณะพิมพ์ (Search-as-you-type)
+function search() {
+    let input = document.getElementById('search').value.toLowerCase();
+    
+    dictionaryData.forEach((item, index) => {
+        let card = document.getElementById('card-' + index);
+        let content = (item.term + item.translation + item.keywords).toLowerCase();
+        
+        if (input !== "" && content.includes(input)) {
+            card.classList.add('active');
+        } else {
+            card.classList.remove('active');
+        }
+    });
+}
+
+// เริ่มต้นสร้างข้อมูล
+buildCards();
+</script>
+
+</body>
+</html>
