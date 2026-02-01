@@ -3,47 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Legal Dictionary - พจนานุกรมกฎหมาย</title>
+    <title>Legal Dictionary</title>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Sarabun', sans-serif; padding: 20px; background-color: #f0f2f5; color: #333; }
+        body { font-family: 'Sarabun', sans-serif; background-color: #f0f2f5; padding: 20px; }
         .container { max-width: 600px; margin: auto; }
-        h1 { color: #2c3e50; text-align: center; margin-bottom: 30px; }
-        
-        .search-box { position: sticky; top: 10px; background: #f0f2f5; padding: 10px 0; z-index: 100; }
-        #search { width: 100%; padding: 15px 20px; border: 2px solid #3498db; border-radius: 30px; font-size: 18px; outline: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1); box-sizing: border-box; }
-        
-        #results { margin-top: 20px; }
-        .card { background: white; padding: 20px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); transition: transform 0.2s; border-left: 5px solid #3498db; }
-        .card:hover { transform: translateY(-3px); }
-        .term { color: #e74c3c; font-size: 22px; font-weight: bold; margin-bottom: 5px; }
-        .trans { color: #2980b9; font-size: 18px; font-weight: bold; margin-bottom: 10px; }
-        .def { color: #555; font-size: 15px; line-height: 1.6; border-top: 1px solid #eee; padding-top: 10px; margin-top: 10px; }
-        .note { font-size: 0.9em; color: #666; margin-top: 8px; font-style: italic; background: #f9f9f9; padding: 5px; border-radius: 4px; }
-        .refer { font-size: 0.8em; color: #999; margin-top: 5px; text-align: right; }
-        .no-result { text-align: center; color: #888; margin-top: 50px; }
+        .search-box { position: sticky; top: 10px; z-index: 1000; margin-bottom: 20px; }
+        #search { 
+            width: 100%; padding: 15px; border: 2px solid #3498db; 
+            border-radius: 25px; font-size: 18px; outline: none;
+            box-sizing: border-box; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .card { 
+            background: white; padding: 20px; border-radius: 12px; 
+            margin-bottom: 15px; border-left: 6px solid #3498db;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .term { color: #e74c3c; font-size: 22px; font-weight: bold; }
+        .trans { color: #2980b9; font-size: 18px; margin: 5px 0; font-weight: bold; }
+        .def { color: #555; font-size: 15px; border-top: 1px solid #eee; padding-top: 10px; margin-top: 10px; }
+        .note { font-size: 0.9em; color: #27ae60; margin-top: 8px; background: #f9f9f9; padding: 8px; border-radius: 5px; }
+        .refer { font-size: 0.8em; color: #999; text-align: right; margin-top: 10px; }
+        .no-result { text-align: center; color: #999; margin-top: 50px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>🏛️ พจนานุกรมกฎหมาย</h1>
-    
+    <h1 style="text-align:center; color:#2c3e50;">⚖️ พจนานุกรมกฎหมาย</h1>
     <div class="search-box">
-        <input type="text" id="search" placeholder="พิมพ์คำศัพท์ หรือคำแปล..." onkeyup="search()" autocomplete="off">
+        <input type="text" id="search" placeholder="ค้นหาคำศัพท์อังกฤษ หรือ ไทย..." oninput="runSearch()">
     </div>
-    
     <div id="results"></div>
 </div>
 
 <script>
-// ข้อมูลคำศัพท์
+// ข้อมูลที่แก้ไข Syntax แล้ว
 const dictionaryData = [
     { term: "Ab absurdo", translation: "ไม่มีมูล", definition: "จากความไร้สาระ หรือจากสิ่งที่เป็นไปไม่ได้", keywords: "absrudo" },
     { term: "Ab initio", translation: "ตั้งแต่ต้น", definition: "ตั้งแต่เริ่มต้น", keywords: "ab intio" },
-    { term: "A priori", translation: "เรื่องก่อหน้า", definition: "ความก่อนหน้า", keywords: "A pirori" },
-    { term: "certiorary", translation: "คำสั่งศาลฏีกา", definition: "คำสั่งของศาลฎีกา", keywords: "certiorrary", refer: "", note: "" },
-    { term: "Tort", translation: "การละเมิด", definition: "การกระทำโดยจงใจหรือประมาทเลินเล่อต่อบุคคลอื่นโดยผิดกฎหมาย เป็นเหตุให้เขาเสียหายแก่ชีวิต ร่างกาย อนามัย เสรีภาพ ทรัพย์สิน หรือสิทธิอย่างใดอย่างหนึ่ง", keywords: "trot", refer: "ประมวลกฎหมายแพ่งและพาณิชย์ มาตรา 420", note: "The defendant committed a tort of trespass. (จำเลยได้กระทำการละเมิดฐานบุกรุก)" },
+    { term: "Tort", translation: "การละเมิด", definition: "การกระทำโดยจงใจหรือประมาทเลินเล่อต่อบุคคลอื่นโดยผิดกฎหมาย", keywords: "trot", refer: "ป.พ.พ. มาตรา 420", note: "The defendant committed a tort." },
+    { term: "Negligence", translation: "ความประมาทเลินเล่อ", definition: "การกระทำโดยปราศจากความระมัดระวังซึ่งบุคคลในภาวะเช่นนั้นจักต้องมี", keywords: "careless", refer: "Facebook: English for Lawyers", note: "Negligence occurs when a person fails to exercise care." },
+    { term: "Plaintiff", translation: "โจทก์", definition: "บุคคลที่เป็นผู้เริ่มดำเนินคดีโดยยื่นคำฟ้องต่อศาล", keywords: "prosecutor", refer: "Legal English", note: "The plaintiff sought damages." },
     { term: "Courtroom", translation: "ห้องพิจารณา", definition: "สถานที่ใช้ในการดำเนินกระบวนยุติธรรม ทั้งในทางกระบวนพิจารณาและวิธีอื่นใดที่กฎหมายได้บัญญัติไว้", keywords: "corutroom", refer: "TH.BigDict", note: "The jury found the defendant liable in the courtroom. (คณะลูกขุนตัดสินให้จำเลยต้องรับผิดในห้องพิจารณาคดี)" },
     { term: "Dispute", translation: "ข้อพิพาท", definition: "ข้อขัดแย้งหรือโต้แย้งระหว่างผู้เป็นคู่กรณีในประเด็นข้อกฎหมายหรือข้อเท็จจริง", keywords: "dispute", refer: "พจนานุกรมราชบัณฑิตยสถาน", note: "The central dispute is whether the defendant is liable for negligence. (ข้อพิพาทหลักคือจำเลยต้องรับผิดฐานประมาทเลินเล่อหรือไม่)" },
     { term: "Dispute settlement", translation: "การระงับข้อพิพาท", definition: "กระบวนการหรือวิธีการที่ใช้ในการยุติข้อขัดแย้งระหว่างคู่กรณี เช่น การเจรจา การไกล่เกลี่ย หรือการอนุญาโตตุลาการ", keywords: "dispute setterment", refer: "LegalGlossary", note: "Dispute settlement can be achieved through negotiation or mediation. (การระงับข้อพิพาททำได้โดยการเจรจาหรือไกล่เกลี่ย)" },
@@ -61,7 +62,7 @@ const dictionaryData = [
     { term: "Action", translation: "การฟ้องร้อง / การดำเนินคดี", definition: "กระบวนการทางกฎหมายที่โจทก์ยื่นคำฟ้องต่อศาลเพื่อบังคับตามสิทธิเรียกร้องในคดีแพ่ง หรือกล่าวหาว่ามีการกระทำผิดในคดีอาญา เพื่อให้ศาลมีคำพิพากษา", keywords: "actsion", refer: "จันทรลักษณ โชติรัตนดิลก. ภาษาอังกฤษเบื้องต้นสำหรับนักกฎหมาย", note: "The plaintiff decided to bring a legal action against the company. (โจทก์ตัดสินใจยื่นฟ้องคดีต่อบริษัท)" },
     { term: "Battery", translation: "ความผิดฐานทำร้ายร่างกาย", definition: "การทำร้ายผู้อื่นจนเป็นเหตุให้เกิดอันตรายแก่กายหรือจิตใจ รวมถึงการสัมผัสร่างกายผู้อื่นโดยเจตนาและไม่ได้รับความยินยอม", keywords: "batery", refer: "ประมวลกฎหมายอาญา มาตรา 295", note: "Battery involves intentional physical contact without consent. (การทำร้ายร่างกายคือการสัมผัสร่างกายผู้อื่นโดยเจตนาโดยไม่ได้รับความยินยอม)" },
     { term: "Obligation", translation: "หนี้ / พันธกรณี", definition: "นิติสัมพันธ์ระหว่างบุคคลสองฝ่าย ซึ่งเจ้าหนี้มีสิทธิเรียกให้ลูกหนี้ชำระหนี้ด้วยการกระทำการ งดเว้นกระทำการ หรือส่งมอบทรัพย์สิน", keywords: "obilgation", refer: "ประมวลกฎหมายแพ่งและพาณิชย์ มาตรา 194", note: "Both parties have a legal obligation to follow the terms of the contract. (คู่สัญญามีหน้าที่ตามกฎหมายต้องปฏิบัติตามเงื่อนไขของสัญญา)" },
-    { term: "Pardon", translation: "การอภัยโทษ", definition: "การสั่งยกเลิกโทษที่บุคคลได้รับตามคำพิพากษาถึงที่สุด โดยเป็นการใช้อำนาจของประมุขแห่งรัฐหรือตามที่กฎหมายบัญญัติ", keywords: "padon, pradon", refer: "ประ
+    { term: "Pardon", translation: "การอภัยโทษ", definition: "การสั่งยกเลิกโทษที่บุคคลได้รับตามคำพิพากษาถึงที่สุด โดยเป็นการใช้อำนาจของประมุขแห่งรัฐหรือตามที่กฎหมายบัญญัติ", keywords: "padon, pradon", refer: "ประมวลกฎหมายวิธีพิจารณาความอาญา มาตรา 259", note: "The prisoner was released after receiving a royal pardon. (นักโทษได้รับการปล่อยตัวหลังจากได้รับการอภัยโทษ)" },
     { term: "Plaintiff", translation: "โจทก์", definition: "บุคคล นิติบุคคล หรือพนักงานอัยการที่เป็นผู้เริ่มดำเนินคดีโดยยื่นคำฟ้องต่อศาลเพื่อเรียกร้องสิทธิหรือค่าเสียหาย", keywords: "palintif", refer: "จันทรลักษณ โชติรัตนดิลก. ภาษาอังกฤษเบื้องต้นสำหรับนักกฎหมาย", note: "The plaintiff sought damages for the injuries sustained. (โจทก์เรียกร้องค่าเสียหายสำหรับการบาดเจ็บที่ได้รับ)" },
     { term: "Compound", translation: "ประนีประนอมยอมความ", definition: "การที่คู่กรณีตกลงระงับข้อพิพาทที่มีอยู่หรือจะมีขึ้น โดยต่างฝ่ายต่างยอมผ่อนผันให้แก่กันเพื่อให้ข้อพิพาทเสร็จสิ้นไป", keywords: "compuond", refer: "จันทรลักษณ โชติรัตนดิลก. ภาษาอังกฤษเบื้องต้นสำหรับนักกฎหมาย", note: "The parties agreed to compound the dispute without going to court. (คู่กรณีตกลงประนีประนอมกันโดยไม่ต้องขึ้นศาล)" },
     { term: "Compound Interest", translation: "ดอกเบี้ยทบต้น", definition: "การนำดอกเบี้ยที่ค้างชำระมาสมทบกับเงินต้นเพื่อคิดดอกเบี้ยในงวดถัดไป ซึ่งต้องมีข้อตกลงเป็นหนังสือตามที่กฎหมายกำหนด", keywords: "compuond", refer: "จันทรลักษณ โชติรัตนดิลก. ภาษาอังกฤษเบื้องต้นสำหรับนักกฎหมาย", note: "The bank charges compound interest on the loan. (ธนาคารคิดดอกเบี้ยทบต้นสำหรับเงินกู้)" },
@@ -93,78 +94,40 @@ const dictionaryData = [
     { term: "Submit / Submission", translation: "ยื่น / เสนอ / การยื่น", definition: "การยื่นเรื่องราว คำร้อง หรือพยานหลักฐาน เพื่อให้ผู้มีอำนาจหรือศาลพิจารณา", keywords: "submitt", refer: "พจนานุกรมราชบัณฑิตยสถาน / จันทรลักษณ โชติรัตนดิลก", note: "The submission of evidence must be made before the deadline. (การยื่นพยานหลักฐานต้องกระทำก่อนกำหนดเวลา)" }
 ];
 
-// ฟังก์ชันค้นหา
-function search() {
+function runSearch() {
     const query = document.getElementById('search').value.toLowerCase().trim();
     const resultsDiv = document.getElementById('results');
     
-    if (query === "") {
-        resultsDiv.innerHTML = ''; 
+    // ถ้าไม่พิมพ์อะไรเลย ให้หน้าจอว่าง
+    if (!query) {
+        resultsDiv.innerHTML = '';
         return;
     }
 
-    // กรองข้อมูลจากทุกฟิลด์
-    let filtered = dictionaryData.filter(item => {
-        const searchableText = [
-            item.term, 
-            item.translation, 
-            item.definition, 
-            item.keywords || "", 
-            item.note || "", 
-            item.refer || ""
-        ].join(" ").toLowerCase();
-        return searchableText.includes(query);
+    // กรองข้อมูล
+    const filtered = dictionaryData.filter(item => {
+        return item.term.toLowerCase().includes(query) || 
+               item.translation.toLowerCase().includes(query) ||
+               (item.keywords && item.keywords.toLowerCase().includes(query));
     });
 
-    // จัดลำดับความเกี่ยวข้อง
-    filtered.sort((a, b) => {
-        function getScore(item) {
-            const t = (item.term || "").toLowerCase();
-            const kw = (item.keywords || "").toLowerCase();
-            const tr = (item.translation || "").toLowerCase();
-            
-            if (t === query || tr === query) return 1;    // ตรงเป๊ะ
-            if (t.startsWith(query)) return 2;             // ขึ้นต้นด้วยคำที่ค้น
-            if (kw.includes(query)) return 3;              // เจอในคำสำคัญ
-            return 4;                                      // อื่นๆ
-        }
-
-        const scoreA = getScore(a);
-        const scoreB = getScore(b);
-
-        if (scoreA === scoreB) {
-            return (a.term || "").length - (b.term || "").length; 
-        }
-        return scoreA - scoreB;
-    });
-
-    displayData(filtered);
-}
-
-// ฟังก์ชันแสดงผล
-function displayData(data) {
-    const resultsDiv = document.getElementById('results');
-    resultsDiv.innerHTML = ''; 
-    
-    if (data.length === 0) {
-        resultsDiv.innerHTML = '<div class="no-result">ไม่พบคำศัพท์ที่ค้นหา...</div>';
-        return;
+    // แสดงผล
+    if (filtered.length === 0) {
+        resultsDiv.innerHTML = '<div class="no-result">❌ ไม่พบคำศัพท์ที่ท่านต้องการ</div>';
+    } else {
+        resultsDiv.innerHTML = filtered.map(item => `
+            <div class="card">
+                <div class="term">${item.term}</div>
+                <div class="trans">${item.translation}</div>
+                <div class="def">${item.definition}</div>
+                ${item.note ? `<div class="note"><b>💡 Note:</b> ${item.note}</div>` : ''}
+                ${item.refer ? `<div class="refer">อ้างอิง: ${item.refer}</div>` : ''}
+            </div>
+        `).join('');
     }
-
-    data.forEach(item => {
-        const div = document.createElement('div');
-        div.className = 'card';
-        div.innerHTML = `
-            <div class="term">${item.term}</div>
-            <div class="trans">${item.translation}</div>
-            <div class="def">${item.definition}</div>
-            ${item.note ? `<div class="note"><strong>💡 บันทึก:</strong> ${item.note}</div>` : ''}
-            <div class="refer">📚 ที่มา: ${item.refer || 'ไม่ระบุ'}</div>
-        `;
-        resultsDiv.appendChild(div);
-    });
 }
 </script>
 
 </body>
 </html>
+
