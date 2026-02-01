@@ -21,6 +21,8 @@
         .term { color: #e74c3c; font-size: 22px; font-weight: bold; margin-bottom: 5px; }
         .trans { color: #2980b9; font-size: 18px; font-weight: bold; margin-bottom: 10px; }
         .def { color: #555; font-size: 15px; line-height: 1.6; border-top: 1px solid #eee; pt: 10px; margin-top: 10px; }
+        .note { font-size: 0.9em; color: #666; margin-top: 8px; font-style: italic; }
+        .refer { font-size: 0.8em; color: #999; margin-top: 5px; text-align: right; }
         .no-result { text-align: center; color: #888; margin-top: 50px; }
     </style>
 </head>
@@ -63,14 +65,69 @@ const dictionaryData = [
         translation: "คำสั่งศาลฏีกา",
         definition: "คำสั่งของศาลฎีกา",
         keywords: "certiorrary"
+        refer: ""
+        note: ""
     }
 ];
 
 const resultsDiv = document.getElementById('results');
 
-// 2. ฟังก์ชันแสดงผลข้อมูล (สร้างการ์ด)
+// 1. ฟังก์ชันค้นหาและจัดลำดับ
+async function search() {
+    const query = document.getElementById('search').value.toLowerCase().trim();
+    const resultsDiv = document.getElementById('results');
+    
+    if (!query) {
+        resultsDiv.innerHTML = ''; 
+        return;
+    }
+
+    // ล้างค่า # ออก (ถ้ามี)
+    const cleanQuery = query.replace('#', '');
+
+    // กรองข้อมูล: ค้นหาจากทุกฟิลด์ที่มีใน JSON
+    let filtered = dictionaryData.filter(item => {
+        const searchableText = [
+            item.term, 
+            item.translation, 
+            item.definition, 
+            item.keywords, 
+            item.note, 
+            item.refer
+        ].join(" ").toLowerCase();
+        return searchableText.includes(cleanQuery);
+    });
+
+    // จัดลำดับความเกี่ยวข้อง (Sorting)
+    filtered.sort((a, b) => {
+        function getScore(item) {
+            const t = (item.term || "").toLowerCase();
+            const kw = (item.keywords || "").toLowerCase();
+            
+            if (t === cleanQuery) return 1;              // ตรงเป๊ะกับศัพท์หลัก
+            if (t.startsWith(cleanQuery)) return 2;      // ขึ้นต้นด้วยคำที่ค้น
+            if (kw.includes(cleanQuery)) return 3;       // เจอในคำสำคัญ (Keywords)
+            if (t.includes(cleanQuery)) return 4;        // มีคำที่ค้นแทรกอยู่ในศัพท์
+            return 5;                                    // เจอในเนื้อหาอื่นๆ (Def/Note/Refer)
+        }
+
+        const scoreA = getScore(a);
+        const scoreB = getScore(b);
+
+        if (scoreA === scoreB) {
+            return (a.term || "").length - (b.term || "").length; // สั้นกว่าอยู่บน
+        }
+        return scoreA - scoreB;
+    });
+
+    // ส่งไปแสดงผล (ตัดเอาแค่ 5 อันดับแรกเพื่อความเร็ว)
+    displayData(filtered.slice(0, 5));
+}
+
+// 2. ฟังก์ชันแสดงผลการ์ด (อัปเกรดให้รองรับข้อมูลครบชุด)
 function displayData(data) {
-    resultsDiv.innerHTML = ''; // ล้างค่าเก่า
+    const resultsDiv = document.getElementById('results');
+    resultsDiv.innerHTML = ''; 
     
     if (data.length === 0) {
         resultsDiv.innerHTML = '<div class="no-result">ไม่พบคำศัพท์ที่ค้นหา...</div>';
@@ -84,11 +141,12 @@ function displayData(data) {
             <div class="term">${item.term}</div>
             <div class="trans">${item.translation}</div>
             <div class="def">${item.definition}</div>
+            ${item.note ? `<div class="note"><strong>บันทึก:</strong> ${item.note}</div>` : ''}
+            <div class="refer">ที่มา: ${item.refer || 'ไม่ระบุ'}</div>
         `;
         resultsDiv.appendChild(div);
     });
 }
-
 // 3. ฟังก์ชันค้นหา
 function search() {
     // .trim() จะช่วยตัดช่องว่างหัวท้ายออก ถ้าเหลือแต่ความว่างเปล่าจริงๆ จะได้ล้างหน้าจอได้แม่นยำ
@@ -116,6 +174,7 @@ function search() {
 
 </body>
 </html>
+
 
 
 
